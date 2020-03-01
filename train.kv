@@ -1,0 +1,241 @@
+#:import Factory kivy.factory.Factory
+#the main screen manager
+#determine the new screen on the last
+
+<Manager>:
+    id:screen_manager
+    screen_on:login_screen
+    screen_two:container_screen
+    LoginScreen:
+        id:login_screen
+        name:'login_screen'
+        manager:screen_manager
+    ContainerScreen:
+        id:container_screen
+        name:'container_screen'
+        manager:screen_manager
+
+
+<LoginScreen>:
+
+    BoxLayout:
+        orientation:'vertical'
+
+        Label:
+            text:'[b]Open[/b] [color=ff0033]D-box[/color]'
+            font_size:40
+            markup:True
+
+
+        MDTextField:
+            id: password
+            password:True
+            size_hint:0.5, None
+            focus:True
+            pos_hint:{'center_x':0.5}
+            hint_text: "Password"
+            required: True
+            helper_text_mode: "on_error"
+            on_text_validate:root.validate()
+            line_color_normal:1, 1, 1, 1
+            line_color_focus:1, 1, 1, 1
+            helper_text:'Password required'
+            icon_left: 'email'
+            max_text_length:25
+
+        Label:
+            id: login_label
+            size_hint:1, None
+            halign: 'center'
+            bold: True
+
+
+        MDFloatingActionButton:
+            icon: 'login'
+            opposite_colors: True
+            elevation_normal: 8
+            pos_hint:{'center_x':0.5, 'center_y':0.5}
+            on_release:root.validate()
+
+        Label:
+            text:'Powered by [b]EKRUI kossi cesar[/b]'
+            markup:True
+
+
+
+
+
+
+
+<ContainerScreen>:
+    BoxLayout:
+        orientation:'vertical'
+
+        MDToolbar:
+            id: toolbar
+            title: 'IPNET Expert SA'
+            left_action_items: [['menu', lambda x: '']]
+            right_action_items:[['view-list', lambda x: '']]
+            md_bg_color:self.theme_cls.primary_color
+
+        MDBottomNavigation:
+            id: panel
+
+            MDBottomNavigationItem:
+                name: 'files1'
+                text: 'View client'
+                icon: 'view-list'
+
+
+                ScrollView:
+
+                    GridLayout:
+                        id: box
+                        size_hint_y: None
+                        height: self.minimum_height
+                        cols: 1
+
+
+
+
+                        TwoLineIconListItem:
+                            text: "Call over mobile network"
+
+                        TwoLineIconListItem:
+                            text: "Call over mobile network"
+
+                        TwoLineIconListItem:
+                            text: "Call over mobile network"
+
+                        TwoLineIconListItem:
+                            text: "Call over mobile network"
+
+                        TwoLineIconListItem:
+                            text: "Call over mobile network"
+
+                        TwoLineIconListItem:
+                            text: "Call over mobile network"
+
+                        TwoLineIconListItem:
+                            text: "Call over mobile network"
+                        TwoLineIconListItem:
+                            text: "EKRUI Kossi Cessar"
+                            on_press: root.callback(self.text)
+                            secondary_text:"98 96 44 95 "
+
+                            IconLeftSampleWidget:
+                                icon: 'remote'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            MDBottomNavigationItem:
+                name: 'files2'
+                text: 'add a client'
+                icon: 'tab-plus'
+                BoxLayout:
+                    orientation:'vertical'
+                    size_hint:1, 1
+                    BoxLayout:
+                        size_hint:1, None
+                        orientation:'vertical'
+                        MDLabel:
+                            font_style: 'Body1'
+                            theme_text_color: 'Primary'
+                            text: 'ADD NEW [b]CLIENT[/b]'
+                            halign: 'center'
+                            font_size:30
+                            markup:True
+                        MDLabel:
+                            id:error_message
+                            font_style: 'Body1'
+                            text:'[color=ff0033]error message[/color]'
+                            theme_text_color: 'Primary'
+                            halign: 'center'
+                            markup:True
+                    BoxLayout:
+                        orientation:'vertical'
+                        size_hint:0.7, 1
+                        pos_hint:{'center_x':0.5}
+
+                        MDTextField:
+                            id: name
+
+
+                            hint_text: "Name"
+                            required: True
+                            helper_text_mode: "on_error"
+                            on_text_validate:root.client()
+                            line_color_normal:1, 1, 1, 1
+                            line_color_focus:1, 1, 1, 1
+                            helper_text:'Password required'
+                            icon_left: 'email'
+                            max_text_length:25
+                        MDTextField:
+                            id: motif
+
+
+                            hint_text: "Motif"
+                            required: True
+                            helper_text_mode: "on_error"
+                            on_text_validate:root.client()
+                            line_color_normal:1, 1, 1, 1
+                            line_color_focus:1, 1, 1, 1
+                            helper_text:'Password required'
+                            icon_left: 'email'
+                            max_text_length:25
+
+                        MDTextField:
+                            id: phone_number
+                            hint_text: "Phone number"
+                            required: True
+                            helper_text_mode: "on_error"
+                            on_text_validate:root.client()
+                            line_color_normal:1, 1, 1, 1
+                            line_color_focus:1, 1, 1, 1
+                            helper_text:'Password required'
+                            input_filter: "int"
+                            max_text_length:8
+
+
+
+                        MDFloatingActionButton:
+                            pos_hint: {'center_x': .5}
+                            icon: 'check'
+                            opposite_colors: True
+                            elevation_normal: 2
+                            valign: 'bottom'
+                            on_release: root.client()
+                    BoxLayout:
+                        size_hint:1, 0.5
+
+
+
+
+            MDBottomNavigationItem:
+                name: 'files3'
+                text: 'Settings'
+                icon: 'settings'
+
+                MDLabel:
+                    font_style: 'Body1'
+                    theme_text_color: 'Primary'
+                    text: 'Oh god JS again'
+                    halign: 'center'

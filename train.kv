@@ -8,11 +8,11 @@
     screen_two:container_screen
     LoginScreen:
         id:login_screen
-        name:'login_screen'
+        name:'login'
         manager:screen_manager
     ContainerScreen:
         id:container_screen
-        name:'container_screen'
+        name:'app'
         manager:screen_manager
 
 
@@ -52,13 +52,15 @@
 
         MDFloatingActionButton:
             icon: 'login'
+            id:button
             opposite_colors: True
             elevation_normal: 8
             pos_hint:{'center_x':0.5, 'center_y':0.5}
             on_release:root.validate()
+            color:[1, .0, .4, .8]
 
         Label:
-            text:'Powered by [b]EKRUI kossi cesar[/b]'
+            text:'Powered by [b]Hophoet[/b]'
             markup:True
 
 
@@ -73,9 +75,9 @@
 
         MDToolbar:
             id: toolbar
-            title: 'IPNET Expert SA'
-            left_action_items: [['menu', lambda x: '']]
-            right_action_items:[['view-list', lambda x: '']]
+            title: 'dbox'
+            #left_action_items: [['menu', lambda x: '']]
+            right_action_items:[['logout', root.navigate ]]
             md_bg_color:self.theme_cls.primary_color
 
         MDBottomNavigation:
@@ -94,37 +96,12 @@
                         size_hint_y: None
                         height: self.minimum_height
                         cols: 1
-
-
-
-
-                        TwoLineIconListItem:
-                            text: "Call over mobile network"
-
-                        TwoLineIconListItem:
-                            text: "Call over mobile network"
-
-                        TwoLineIconListItem:
-                            text: "Call over mobile network"
-
-                        TwoLineIconListItem:
-                            text: "Call over mobile network"
-
-                        TwoLineIconListItem:
-                            text: "Call over mobile network"
-
-                        TwoLineIconListItem:
-                            text: "Call over mobile network"
-
-                        TwoLineIconListItem:
-                            text: "Call over mobile network"
                         TwoLineIconListItem:
                             text: "EKRUI Kossi Cessar"
                             on_press: root.callback(self.text)
                             secondary_text:"98 96 44 95 "
-
                             IconLeftSampleWidget:
-                                icon: 'remote'
+                                icon: 'account-card-details'
 
 
 

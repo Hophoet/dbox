@@ -1,3 +1,7 @@
+""" The program class implementation """
+
+import datetime
+
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
@@ -6,16 +10,16 @@ from kivy.properties import ObjectProperty
 from kivymd.theming import ThemeManager
 from kivy.lang import Builder
 from kivymd.uix.dialog import MDInputDialog, MDDialog
-import datetime
 from kivymd.uix.button import MDIconButton
-from kivymd.uix.list import TwoLineIconListItem, ILeftBodyTouch, ThreeLineAvatarIconListItem, ThreeLineListItem, ThreeLineIconListItem
+from kivymd.uix.list import TwoLineIconListItem, ILeftBodyTouch
+#import pdb
 
 #loading of the kv file for the design
-root = Builder.load_file('train.kv')
+ROOT = Builder.load_file('train.kv')
 
 #icon class
 class IconLeftSampleWidget(ILeftBodyTouch, MDIconButton):
-    pass
+    """definition for indirect use"""
 
 class LoginScreen(Screen):
     """The login screen of the application """
@@ -23,20 +27,21 @@ class LoginScreen(Screen):
     def validate(self):
         """validate function of the client input to login the application """
         #condition. if the password is correct or not
-        if self.ids.password.text =='root':
+        if self.ids.password.text == 'root':
             self.manager.current = 'app'
-            self.manager.transition.direction ='left'
+            self.manager.transition.direction = 'left'
             self.ids.password.text = ''
 
         else:
             #situation if the textfield is empty or not
+            self.ids.login_label.markup = True
             if self.ids.password.text == '':
-                self.ids.login_label.text = 'Password required'
+                self.ids.login_label.text = '[color=ff0033]Password required[/color]'
                 print(dir(self.ids.button))
                 print(dir(self.ids.button.color))
                 self.ids.password.focus = True
             else:
-                self.ids.login_label.text = 'Incorrect password'
+                self.ids.login_label.text = '[color=ff0033]Incorrect password[/color]'
                 self.ids.password.focus = True
 
 class ContainerScreen(Screen):
@@ -46,9 +51,11 @@ class ContainerScreen(Screen):
         """constructor of the principal screen """
         Screen.__init__(self, *args, **kwargs)
 
+
         #self.display_client()
 
     def on_enter(self, *args, **kwargs):
+        """redefined method """
         self.display_client()
 
     #method to dispay clients
@@ -61,9 +68,8 @@ class ContainerScreen(Screen):
         for key, value in clients.items():
             self.ids.box.add_widget(
                 TwoLineIconListItem(
-                    text='[b]'+value[0]+'[/b]        '+value[1],
+                    text='[b]' + value[0] + '[/b]        ' + value[1],
                     secondary_text=str(key),
-
                     )
             )
 
@@ -73,7 +79,7 @@ class ContainerScreen(Screen):
     def navigate(self, *args, **kwargs):
         """method use for navigation """
         self.manager.current = 'login'
-        self.manager.transition.direction ='right'
+        self.manager.transition.direction = 'right'
 
 
     def client(self):
@@ -86,12 +92,12 @@ class ContainerScreen(Screen):
         phone_number = self.ids.phone_number.text
 
         #get of the differents condition of the validation of the client adding
-        name_condition = (not name.isspace() ) and len(name)!=0
-        motif_condition = (not motif.isspace()) and len(motif)!=0
-        number_condition = (not phone_number.isspace())
+        name_condition = (not name.isspace()) and len(name) != 0
+        motif_condition = (not motif.isspace()) and len(motif) != 0
+        number_condition = not phone_number.isspace()
         if motif_condition and name_condition and number_condition:
-            if (not phone_number.isdigit()) or (not len(phone_number)==8):
-                self.ids.error_message.text ='[color=ff0033]invalide phone number[/color]'
+            if (not phone_number.isdigit()) or (not len(phone_number) == 8):
+                self.ids.error_message.text = '[color=ff0033]invalide phone number[/color]'
             else:
                 client = Register(name, motif, phone_number)
                 #instruction to do if the client exists in the data file
@@ -104,8 +110,7 @@ class ContainerScreen(Screen):
                     data = client.get_clients()
                     #add as widget in the application
                     self.ids.box.add_widget(TwoLineIconListItem(
-                    text=self.ids.name.text +'        '+self.ids.motif.text,
-                    secondary_text=self.ids.phone_number.text))
+                    text = self.ids.name.text + '        ' + self.ids.motif.text, secondary_text=self.ids.phone_number.text))
                     #delete the current input after the save
                     self.ids.name.text = ''
                     self.ids.motif.text = ''
@@ -113,8 +118,7 @@ class ContainerScreen(Screen):
                     #saving message
                     self.ids.error_message.text = '[color=00ff33]Save successully![/color]'
 
-                    for key, value in data.items():
-                        print(key, value)
+
         #instruction for an invalid input
         else:
             self.ids.error_message.text = '[color=ff0033]Invalid input[/color]'
@@ -140,6 +144,7 @@ class Register:
 
 
     def exists(self):
+        """client exists testing method """
         data = self.get_clients()
         if self.phone_number in data.keys():
             return True
@@ -173,10 +178,11 @@ class Register:
 class OpenDBoxApp(App):
     """application principal class """
     #set of the theme manager and a set of principal theme
+
     theme_cls = ThemeManager()
-    theme_cls.primary_palette = 'Yellow'
+    theme_cls.primary_palette = 'Blue'
     theme_cls.accent_palette = 'Blue'
-    theme_cls.accent_palette = 'Orange'
+    theme_cls.accent_palette = 'Gray'
     theme_cls.theme_style = 'Dark'
 
     def build(self):

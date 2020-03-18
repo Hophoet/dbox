@@ -22,7 +22,7 @@
         orientation:'vertical'
 
         Label:
-            text:'[b]Open[/b] [color=ff0033]D-box[/color]'
+            text:'[b]Open [color=ff0033]D-box[/color] [/b]'
             font_size:40
             markup:True
 
@@ -139,11 +139,12 @@
                             text: 'ADD NEW [b]CLIENT[/b]'
                             halign: 'center'
                             font_size:30
+                            margin:30
                             markup:True
                         MDLabel:
                             id:error_message
                             font_style: 'Body1'
-                            text:'[color=ff0033]error message[/color]'
+                            text:'[b][color=ff0033]error message[/color][/b]'
                             theme_text_color: 'Primary'
                             halign: 'center'
                             markup:True
@@ -162,7 +163,7 @@
                             on_text_validate:root.client()
                             line_color_normal:1, 1, 1, 1
                             line_color_focus:1, 1, 1, 1
-                            helper_text:'Password required'
+                            helper_text:'Name required'
                             icon_left: 'email'
                             max_text_length:25
                         MDTextField:
@@ -175,7 +176,7 @@
                             on_text_validate:root.client()
                             line_color_normal:1, 1, 1, 1
                             line_color_focus:1, 1, 1, 1
-                            helper_text:'Password required'
+                            helper_text:'Motif required'
                             icon_left: 'email'
                             max_text_length:25
 
@@ -187,7 +188,7 @@
                             on_text_validate:root.client()
                             line_color_normal:1, 1, 1, 1
                             line_color_focus:1, 1, 1, 1
-                            helper_text:'Password required'
+                            helper_text:'Number required'
                             input_filter: "int"
                             max_text_length:8
 

@@ -1,1 +1,2 @@
 kivy
+kivymd==0.102.0

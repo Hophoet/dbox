@@ -1,7 +1,8 @@
 """ The program class implementation """
-
+#coding:utf-8
+import time
 import datetime
-
+from kivy.factory import Factory
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
@@ -11,8 +12,11 @@ from kivymd.theming import ThemeManager
 from kivy.lang import Builder
 from kivymd.uix.dialog import MDInputDialog, MDDialog
 from kivymd.uix.button import MDIconButton
-from kivymd.uix.list import TwoLineIconListItem, ILeftBodyTouch
-#import pdb
+from kivymd.uix.list import TwoLineIconListItem,IconLeftWidget, ILeftBodyTouch, OneLineIconListItem
+from kivymd.uix.dialog import MDDialog
+#import of the database manager
+from data_manage import DataBase
+
 
 #loading of the kv file for the design
 ROOT = Builder.load_file('train.kv')
@@ -20,9 +24,17 @@ ROOT = Builder.load_file('train.kv')
 #icon class
 class IconLeftSampleWidget(ILeftBodyTouch, MDIconButton):
     """definition for indirect use"""
+    """
+    def __init__(self, *args, **kwargs):
+        ILeftBodyTouch.__init__(self)
+        MDIconButton.__init__(self, *args, **kwargs)
+        """
 
 class LoginScreen(Screen):
     """The login screen of the application """
+
+
+
     #validate the client input information
     def validate(self):
         """validate function of the client input to login the application """
@@ -32,17 +44,61 @@ class LoginScreen(Screen):
             self.manager.transition.direction = 'left'
             self.ids.password.text = ''
 
+        #situation if the textfield is empty or not correct
         else:
-            #situation if the textfield is empty or not
             self.ids.login_label.markup = True
             if self.ids.password.text == '':
                 self.ids.login_label.text = '[color=ff0033]Password required[/color]'
-                print(dir(self.ids.button))
-                print(dir(self.ids.button.color))
                 self.ids.password.focus = True
             else:
                 self.ids.login_label.text = '[color=ff0033]Incorrect password[/color]'
                 self.ids.password.focus = True
+
+class DetailScreen(Screen):
+    """The detail screen of the customer """
+    #redefined of the constructor
+    def __init__(self, *args, **kwargs):
+        """constructor of the detail screen """
+        Screen.__init__(self, *args, **kwargs)
+        self.database = DataBase('base')
+
+    def back(self, *args, **kwargs):
+        """method use for navigation """
+        #self.manager.current = self.manager.previous()
+        self.manager.current = 'app'
+        self.manager.transition.direction = 'left'
+
+    def get_client(self, number):
+        """method to get the clicked customer"""
+        client = Register().get_clients().get(number)
+        return client
+    def on_enter(self):
+        """on enter method of the detail view"""
+        number = 99797640
+        visits = self.database.get_visits(number)
+        visit_size = len(visits)
+
+        customer = self.database.get_customer_by_number(number)
+        self.ids.detail_header.text = f'[b]{customer[1]}[/b]'
+        self.ids.detail_header.secondary_text  = f'{number}              {visit_size} visit(s)'
+        for visit in visits:
+            #formating of the date and time of the visits
+            visit_date = time.strftime('%d-%m-%Y', time.localtime(visit[2]))
+            visit_time = time.strftime('%H:%M', time.localtime(visit[2]))
+            #display of the detail with visits
+            self.ids.detail_motifs.add_widget(TwoLineIconListItem(
+            text=f'{visit[3]}',
+            secondary_text=visit_time+' '+visit_date,
+            secondary_font_style='Subtitle2',
+            divider='Inset',
+            disabled=True
+            ))
+
+    def on_leave(self):
+        self.ids.detail_motifs.clear_widgets()
+
+
+
 
 class ContainerScreen(Screen):
     """The principal screen of the application """
@@ -50,37 +106,56 @@ class ContainerScreen(Screen):
     def __init__(self, *args, **kwargs):
         """constructor of the principal screen """
         Screen.__init__(self, *args, **kwargs)
+        self.database = DataBase('base')
 
 
-        #self.display_client()
+
+    #creation of methode to_focus for managing the focus stape during the add of customer
+    def to_focus(self, textinput):
+        """focus manager between the textinputs for the add of customer"""
+        #if the textinput name is validate
+        if textinput == 'motif':
+            self.ids.motif.focus = True
+        elif textinput == 'phone_number':
+            self.ids.phone_number.focus = True
+
+
 
     def on_enter(self, *args, **kwargs):
         """redefined method """
         self.display_client()
+    def on_leave(self):
+        self.ids.box.clear_widgets()
 
     #method to dispay clients
     def display_client(self):
         """method to add the current client as a widget in the view part"""
-        client = Register()
-        clients = client.get_clients()
-        print('type', type(clients))
-        print(dir(TwoLineIconListItem))
-        for key, value in clients.items():
+        customers = self.database.get_all_customers()
+        for customer in customers:
             self.ids.box.add_widget(
                 TwoLineIconListItem(
-                    text='[b]' + value[0] + '[/b]        ' + value[1],
-                    secondary_text=str(key),
-                    )
+                    text='[b]' + customer[1] + '[/b]' ,
+                    secondary_text=str(customer[2]),
+                    id=str(customer[0]),
+                    on_press=self.detail
+                    )#.add_widget(IconLeftSampleWidget(icon='account-card-details'))
             )
 
+            #self.ids.list_item.add_widget(IconLeftSampleWidget(icon='account-card-details'))
 
 
+        #print('000000000000000000000', dir(self.ids.dialog))
     #navigate method
-    def navigate(self, *args, **kwargs):
+    def navigate(self, nav, *args, **kwargs):
         """method use for navigation """
         self.manager.current = 'login'
+        self.ids.box.clear_widgets()
         self.manager.transition.direction = 'right'
 
+    def detail(self, id=4 ):
+        """method use for navigation """
+        self.manager.current = 'detail'
+        self.manager.transition.direction = 'right'
 
     def client(self):
         """the principal method for the adding client into the data file """
@@ -89,34 +164,38 @@ class ContainerScreen(Screen):
         motif = self.ids.motif.text
         #set the markup of the phone number textfield to True
         self.ids.phone_number.markup = True
-        phone_number = self.ids.phone_number.text
+        number = self.ids.phone_number.text
 
         #get of the differents condition of the validation of the client adding
         name_condition = (not name.isspace()) and len(name) != 0
         motif_condition = (not motif.isspace()) and len(motif) != 0
-        number_condition = not phone_number.isspace()
+        number_condition = not number.isspace()
         if motif_condition and name_condition and number_condition:
-            if (not phone_number.isdigit()) or (not len(phone_number) == 8):
+            if (not number.isdigit()) or (not len(number) == 8):
                 self.ids.error_message.text = '[color=ff0033]invalide phone number[/color]'
             else:
-                client = Register(name, motif, phone_number)
+                #client = Register(name, motif, phone_number)
                 #instruction to do if the client exists in the data file
-                if client.exists():
+                if self.database.customer_exists(number):
                     self.ids.error_message.text = '[color=ff0033]Client exist[/color]'
+                    self.database.set_data(name, motif, number)
                 #saving insctruction
                 else:
-                    #saving in the data file
-                    client.set_clients()
-                    data = client.get_clients()
-                    #add as widget in the application
-                    self.ids.box.add_widget(TwoLineIconListItem(
-                    text = self.ids.name.text + '        ' + self.ids.motif.text, secondary_text=self.ids.phone_number.text))
-                    #delete the current input after the save
-                    self.ids.name.text = ''
-                    self.ids.motif.text = ''
-                    self.ids.phone_number.text = ''
+
+                    self.database.set_data(name, motif, number)
                     #saving message
                     self.ids.error_message.text = '[color=00ff33]Save successully![/color]'
+
+                    #add as widget in the application
+                    self.ids.box.add_widget(TwoLineIconListItem(
+                    text = '[b]'+self.ids.name.text+'[/b]', secondary_text=self.ids.phone_number.text))
+                    #saving in the data file
+
+                #add as widget in the application
+                #delete the current input after the save
+                self.ids.name.text = ''
+                self.ids.motif.text = ''
+                self.ids.phone_number.text = ''
 
 
         #instruction for an invalid input
@@ -130,6 +209,8 @@ class Manager(ScreenManager):
     login_screen = ObjectProperty(None)
     #content screen
     container_screen = ObjectProperty(None)
+    #detail scree
+    detail_screen = ObjectProperty(None)
 
 class Register:
     """class for the client registry"""
@@ -141,12 +222,13 @@ class Register:
         self.motif = motif
         self.date = datetime.datetime.today()
         self.phone_number = phone_number
+        self.data = self.get_clients()
 
 
     def exists(self):
         """client exists testing method """
-        data = self.get_clients()
-        if self.phone_number in data.keys():
+
+        if self.phone_number in self.data.keys():
             return True
         else:
             return False
@@ -162,14 +244,21 @@ class Register:
         #return of the client dictionnary
         return data
 
+
     def set_clients(self):
         """client setter into the data file"""
         #get of the clients dictionnary
-        data = self.get_clients()
-        #set of the current client into the data file
-        data[self.phone_number] = (self.name, self.motif, self.date)
+
+        #if the current client alrady exists, add the motif with his date
+        #in the database
+        if self.exists():
+            client_informations = self.data.get(self.phone_number)
+            client_informations[1][self.date] = self.motif
+        else:
+            #set of the current client into the data file
+            self.data[self.phone_number] = [self.name, {self.date:self.motif}]
         file = open(Register.file_path, 'w')
-        file.write(str(data))
+        file.write(str(self.data))
         #closing of the file
         file.close()
 
@@ -188,7 +277,6 @@ class OpenDBoxApp(App):
     def build(self):
         """method use to display the application"""
         #return the screen manager
-        print(dir(Manager()))
         return Manager()
 
 

@@ -14,6 +14,11 @@
         id:container_screen
         name:'app'
         manager:screen_manager
+    DetailScreen:
+        id:detail_screen
+        name:'detail'
+        manager:screen_manager
+
 
 
 <LoginScreen>:
@@ -22,10 +27,9 @@
         orientation:'vertical'
 
         Label:
-            text:'[b]Open [color=ff0033]D-box[/color] [/b]'
+            text:'[b]Open [color=0000ff]D-box[/color] [/b]'
             font_size:40
             markup:True
-
 
         MDTextField:
             id: password
@@ -34,11 +38,11 @@
             focus:True
             pos_hint:{'center_x':0.5}
             hint_text: "Password"
-            required: True
+            #required: True
             helper_text_mode: "on_error"
             on_text_validate:root.validate()
-            line_color_normal:1, 1, 1, 1
-            line_color_focus:1, 1, 1, 1
+            #line_color_normal:1, 1, 1, 1
+            #line_color_focus:1, 1, 1, 1
             helper_text:'Password required'
             icon_left: 'email'
             max_text_length:25
@@ -47,7 +51,6 @@
             id: login_label
             size_hint:1, None
             halign: 'center'
-            bold: True
 
 
         MDFloatingActionButton:
@@ -60,16 +63,63 @@
             color:[1, .0, .4, .8]
 
         Label:
-            text:'Powered by [b]Hophoet[/b]'
+            text:'Made by [b]Hophoet [color=0000ff]keA[/color][/b]\nPowered by [b]kivy[/b] & [b]kivyMd[/b] '
+            halign: 'center'
             markup:True
+            font_size:12
 
 
 
 
+<DetailScreen>:
+
+    BoxLayout:
+        orientation:'vertical'
+
+        MDToolbar:
+            id: toolbar
+            title: 'dbox'
+            left_action_items: [['arrow-left-circle', root.back]]
+            #right_action_items:[['logout', root.navigate ]]
+            md_bg_color:self.theme_cls.primary_color
+        BoxLayout:
+            size_hint_y: None
+            height: self.minimum_height
+
+            GridLayout:
+
+                size_hint_y: None
+                height: self.minimum_height
+                cols: 1
+                ThreeLineIconListItem:
+                    id: detail_header
+                    text:''
+                    secondary_text:''
+                    tertiary_text: ''
+                    font_style:'H3'
+                    IconLeftWidget:
+                        id: li_icon_3
+                        icon: 'account-edit'
+
+
+        ScrollView:
+
+            GridLayout:
+
+                size_hint_y: None
+                height: self.minimum_height
+                cols: 1
+
+                GridLayout:
+                    id: detail_motifs
+                    size_hint_y: None
+                    height: self.minimum_height
+                    cols: 1
 
 
 
 <ContainerScreen>:
+
     BoxLayout:
         orientation:'vertical'
 
@@ -77,39 +127,46 @@
             id: toolbar
             title: 'dbox'
             #left_action_items: [['menu', lambda x: '']]
-            right_action_items:[['logout', root.navigate ]]
+            right_action_items:[['exit-to-app', root.navigate ]]
             md_bg_color:self.theme_cls.primary_color
 
         MDBottomNavigation:
             id: panel
-
             MDBottomNavigationItem:
-                name: 'files1'
+                name: 'view'
                 text: 'View client'
-                icon: 'view-list'
+                icon: 'account-badge-horizontal'
 
 
-                ScrollView:
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: dp(10)
+                    padding: dp(20)
 
-                    GridLayout:
-                        id: box
+                    BoxLayout:
                         size_hint_y: None
                         height: self.minimum_height
-                        cols: 1
-                        TwoLineIconListItem:
-                            text: "EKRUI Kossi Cessar"
-                            on_press: root.callback(self.text)
-                            secondary_text:"98 96 44 95 "
-                            IconLeftSampleWidget:
-                                icon: 'account-card-details'
 
+                        MDIconButton:
+                            icon: 'magnify'
 
+                        MDTextField:
+                            id: search_field
+                            hint_text: 'Search icon'
+                            #on_text: app.set_list_md_icons(self.text, True)
 
+                    RecycleView:
+                        id: rv
+                        key_viewclass: 'viewclass'
+                        key_size: 'height'
 
+                        BoxLayout:
 
-
-
-
+                            size_hint_y: None
+                            height: self.minimum_height
+                            cols: 1
+                            id: box
+                            orientation: 'vertical'
 
 
 
@@ -124,9 +181,10 @@
 
 
             MDBottomNavigationItem:
-                name: 'files2'
+                id:add
+                name: 'add'
                 text: 'add a client'
-                icon: 'tab-plus'
+                icon: 'account-plus'
                 BoxLayout:
                     orientation:'vertical'
                     size_hint:1, 1
@@ -155,27 +213,24 @@
 
                         MDTextField:
                             id: name
-
-
                             hint_text: "Name"
+
                             required: True
                             helper_text_mode: "on_error"
-                            on_text_validate:root.client()
-                            line_color_normal:1, 1, 1, 1
-                            line_color_focus:1, 1, 1, 1
+                            on_text_validate:root.to_focus('motif')
+                            #line_color_normal:1, 1, 1, 1
+                            #line_color_focus:1, 1, 1, 1
                             helper_text:'Name required'
                             icon_left: 'email'
                             max_text_length:25
                         MDTextField:
                             id: motif
-
-
                             hint_text: "Motif"
                             required: True
                             helper_text_mode: "on_error"
-                            on_text_validate:root.client()
-                            line_color_normal:1, 1, 1, 1
-                            line_color_focus:1, 1, 1, 1
+                            on_text_validate:root.to_focus('phone_number')
+                            #line_color_normal:1, 1, 1, 1
+                            #line_color_focus:1, 1, 1, 1
                             helper_text:'Motif required'
                             icon_left: 'email'
                             max_text_length:25
@@ -186,11 +241,11 @@
                             required: True
                             helper_text_mode: "on_error"
                             on_text_validate:root.client()
-                            line_color_normal:1, 1, 1, 1
-                            line_color_focus:1, 1, 1, 1
+                            #line_color_normal:1, 1, 1, 1
+                            #line_color_focus:1, 1, 1, 1
                             helper_text:'Number required'
                             input_filter: "int"
-                            max_text_length:8
+                            #max_text_length:8
 
 
 
@@ -201,6 +256,9 @@
                             elevation_normal: 2
                             valign: 'bottom'
                             on_release: root.client()
+
+
+
                     BoxLayout:
                         size_hint:1, 0.5
 

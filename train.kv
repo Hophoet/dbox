@@ -4,7 +4,7 @@
 
 <Manager>:
     id:screen_manager
-    screen_on:login_screen
+    screen_one:login_screen
     screen_two:container_screen
     LoginScreen:
         id:login_screen
@@ -17,6 +17,7 @@
     DetailScreen:
         id:detail_screen
         name:'detail'
+        number:''
         manager:screen_manager
 
 
@@ -79,7 +80,7 @@
         MDToolbar:
             id: toolbar
             title: 'dbox'
-            left_action_items: [['arrow-left-circle', root.back]]
+            left_action_items: [['arrow-left', root.back]]
             #right_action_items:[['logout', root.navigate ]]
             md_bg_color:self.theme_cls.primary_color
         BoxLayout:
@@ -127,7 +128,7 @@
             id: toolbar
             title: 'dbox'
             #left_action_items: [['menu', lambda x: '']]
-            right_action_items:[['exit-to-app', root.navigate ]]
+            right_action_items:[['account-switch', root.navigate ]]
             md_bg_color:self.theme_cls.primary_color
 
         MDBottomNavigation:
@@ -167,6 +168,10 @@
                             cols: 1
                             id: box
                             orientation: 'vertical'
+                            TwoLineIconListItem:
+                                text:'Testing '
+                                id:'jkljk'
+                                on_press:print(dir(self), self.id, self.text)
 
 
 

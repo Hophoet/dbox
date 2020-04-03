@@ -74,7 +74,7 @@ class DetailScreen(Screen):
         return client
     def on_enter(self):
         """on enter method of the detail view"""
-        number = 99797640
+        number = int(self.manager.screen_one.number)
         visits = self.database.get_visits(number)
         visit_size = len(visits)
 
@@ -136,7 +136,7 @@ class ContainerScreen(Screen):
                 TwoLineIconListItem(
                     text='[b]' + customer[1] + '[/b]' ,
                     secondary_text=str(customer[2]),
-                    id=str(customer[0]),
+                    id=str(customer[2]),
                     on_press=self.detail
                     )#.add_widget(IconLeftSampleWidget(icon='account-card-details'))
             )
@@ -152,10 +152,15 @@ class ContainerScreen(Screen):
         self.ids.box.clear_widgets()
         self.manager.transition.direction = 'right'
 
-    def detail(self, id=4 ):
+    def detail(self, customer=None):
         """method use for navigation """
         self.manager.current = 'detail'
+        self.manager.screen_one.number = customer.id
         self.manager.transition.direction = 'right'
+        #print(dir(self.ids.box), list(map(lambda x: x.id, self.ids.box.children)))
+
+        #print(dir(self.manager.screen_one))
+
 
     def client(self):
         """the principal method for the adding client into the data file """

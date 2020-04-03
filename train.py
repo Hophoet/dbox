@@ -77,10 +77,15 @@ class DetailScreen(Screen):
         number = int(self.manager.screen_one.number)
         visits = self.database.get_visits(number)
         visit_size = len(visits)
+        #visit string to display (plural of only one)
+        if visit_size == 1:
+            visit_string = 'visit'
+        else:
+            visit_string = 'visits'
 
         customer = self.database.get_customer_by_number(number)
         self.ids.detail_header.text = f'[b]{customer[1]}[/b]'
-        self.ids.detail_header.secondary_text  = f'{number}              {visit_size} visit(s)'
+        self.ids.detail_header.secondary_text  = f'{number}              {visit_size} '+visit_string
         for visit in visits:
             #formating of the date and time of the visits
             visit_date = time.strftime('%d-%m-%Y', time.localtime(visit[2]))

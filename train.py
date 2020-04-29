@@ -195,10 +195,13 @@ class ContainerScreen(Screen):
                     self.database.set_data(name, motif, number)
                     #saving message
                     self.ids.error_message.text = '[color=00ff33]Save successully![/color]'
-
+                    customer = self.database.get_customer_by_number(number)
                     #add as widget in the application
                     self.ids.box.add_widget(TwoLineIconListItem(
-                    text = '[b]'+self.ids.name.text+'[/b]', secondary_text=self.ids.phone_number.text))
+                        text = '[b]'+self.ids.name.text+'[/b]',
+                        secondary_text=self.ids.phone_number.text,
+                        id=str(customer[2]),
+                        on_press=self.detail))
                     #saving in the data file
 
                 #add as widget in the application

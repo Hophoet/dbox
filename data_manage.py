@@ -33,6 +33,8 @@ class DataBase:
             self.connection.rollback()
 
 
+
+
     def get_all_customers(self):
         """ all customers getter """
         try:

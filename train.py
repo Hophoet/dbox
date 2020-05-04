@@ -93,7 +93,7 @@ class DetailScreen(Screen):
             #display of the detail with visits
             self.ids.detail_motifs.add_widget(TwoLineIconListItem(
             text=f'{visit[3]}',
-            secondary_text=visit_time+' '+visit_date,
+            secondary_text=visit_time+'     '+visit_date,
             secondary_font_style='Subtitle2',
             divider='Inset',
             disabled=True
@@ -112,6 +112,8 @@ class ContainerScreen(Screen):
         """constructor of the principal screen """
         Screen.__init__(self, *args, **kwargs)
         self.database = DataBase('base')
+        #customer display variable condition
+        self.display = True
 
 
 
@@ -128,14 +130,25 @@ class ContainerScreen(Screen):
 
     def on_enter(self, *args, **kwargs):
         """redefined method """
-        self.display_client()
+        if self.display:
+            self.display_client(self.database.get_all_customers())
+            self.display = False
+        #self.display_client()
     def on_leave(self):
-        self.ids.box.clear_widgets()
+        pass
+        #self.ids.box.clear_widgets()
+
+    def search_customers(self, text):
+        if text.strip():
+            customers = self.database.get_all_customers()
+            search_customers = filter(lambda c:c[1].find(text)!=-1, customers)
+            print(len(list(search_customers)))
 
     #method to dispay clients
-    def display_client(self):
+    def display_client(self, customers):
         """method to add the current client as a widget in the view part"""
-        customers = self.database.get_all_customers()
+        #set of the customers list as a generator
+        customers = (customer for customer in customers)
         for customer in customers:
             self.ids.box.add_widget(
                 TwoLineIconListItem(
@@ -154,7 +167,7 @@ class ContainerScreen(Screen):
     def navigate(self, nav, *args, **kwargs):
         """method use for navigation """
         self.manager.current = 'login'
-        self.ids.box.clear_widgets()
+        #self.ids.box.clear_widgets()
         self.manager.transition.direction = 'right'
 
     def detail(self, customer=None):
@@ -170,8 +183,8 @@ class ContainerScreen(Screen):
     def client(self):
         """the principal method for the adding client into the data file """
         #get of the client input information by the widget id
-        name = self.ids.name.text
-        motif = self.ids.motif.text
+        name = self.ids.name.text.strip().lower()
+        motif = self.ids.motif.text.strip().lower()
         #set the markup of the phone number textfield to True
         self.ids.phone_number.markup = True
         number = self.ids.phone_number.text
@@ -198,8 +211,8 @@ class ContainerScreen(Screen):
                     customer = self.database.get_customer_by_number(number)
                     #add as widget in the application
                     self.ids.box.add_widget(TwoLineIconListItem(
-                        text = '[b]'+self.ids.name.text+'[/b]',
-                        secondary_text=self.ids.phone_number.text,
+                        text = '[b]'+name+'[/b]',
+                        secondary_text=number,
                         id=str(customer[2]),
                         on_press=self.detail))
                     #saving in the data file

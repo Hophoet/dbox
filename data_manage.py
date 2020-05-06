@@ -20,6 +20,19 @@ class DataBase:
         #close of the database
         self.connection.close()
 
+    def get_administrator(self, pwd):
+        """ administrator geter his password """
+        try:
+            #sql request to get the administrator
+            self.cursor.execute('SELECT * FROM administrator WHERE password=?',(pwd,))
+            #get of the administrator
+            administrator = self.cursor.fetchone()
+            #return of the administrator
+            return administrator
+        except Exception as error:
+            print('DATABASE ERROR:', error)
+            self.connection.rollback()
+
     def get_customer_by_number(self, number):
         """ customer getter by his phone number """
         try:
@@ -61,7 +74,6 @@ class DataBase:
 
 
 
-
     def set_customer(self, name, number):
         """ customer setter """
 
@@ -95,7 +107,7 @@ class DataBase:
             print('DATBASE ERROR:', error)
             self.connection.rollback()
 
-    def set_data(self, name, motif, number):
+    def set_data(self, name, motif, number, administrator_id):
         """ customer setter with his information """
         #get of the current time
         moment = time.time()
@@ -108,17 +120,17 @@ class DataBase:
         #get of the current timestamp
         current_moment = time.time()
         #set of the customer visit
-        self.set_visit(customer_id, current_moment, motif)
+        self.set_visit(customer_id, current_moment, motif, administrator_id)
 
 
     #visit setter
-    def set_visit(self, customer, moment, motif):
+    def set_visit(self, customer, moment, motif, administrator_id):
         """ visit setter """
         #try execution
         try:
             self.cursor.execute("""
-                    INSERT INTO visit(customer, moment, motif)
-                    VALUES(?, ?, ?)""", (customer, moment, motif))
+                    INSERT INTO visit(customer, moment, motif, administrator)
+                    VALUES(?, ?, ?, ?)""", (customer, moment, motif, administrator_id))
             self.connection.commit()
         except Exception as error:
             print('DATBASE ERROR:', error)

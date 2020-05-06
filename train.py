@@ -32,6 +32,11 @@ class IconLeftSampleWidget(ILeftBodyTouch, MDIconButton):
 
 class LoginScreen(Screen):
     """The login screen of the application """
+    #redefined of the constructor
+    def __init__(self, *args, **kwargs):
+        """constructor of the detail screen """
+        Screen.__init__(self, *args, **kwargs)
+        self.database = DataBase('base')
 
 
 
@@ -39,7 +44,9 @@ class LoginScreen(Screen):
     def validate(self):
         """validate function of the client input to login the application """
         #condition. if the password is correct or not
-        if self.ids.password.text == 'root':
+        administrator = self.database.get_administrator(self.ids.password.text)
+        self.manager.administrator = administrator
+        if administrator:
             self.manager.current = 'app'
             self.manager.transition.direction = 'left'
             self.ids.password.text = ''
@@ -185,6 +192,8 @@ class ContainerScreen(Screen):
         #get of the client input information by the widget id
         name = self.ids.name.text.strip().lower()
         motif = self.ids.motif.text.strip().lower()
+        #get of a adminstrator(register id)
+        administrator_id =  self.manager.administrator[0]
         #set the markup of the phone number textfield to True
         self.ids.phone_number.markup = True
         number = self.ids.phone_number.text
@@ -201,11 +210,12 @@ class ContainerScreen(Screen):
                 #instruction to do if the client exists in the data file
                 if self.database.customer_exists(number):
                     self.ids.error_message.text = '[color=ff0033]Client exist[/color]'
-                    self.database.set_data(name, motif, number)
+
+                    self.database.set_data(name, motif, number, administrator_id)
                 #saving insctruction
                 else:
 
-                    self.database.set_data(name, motif, number)
+                    self.database.set_data(name, motif, number, administrator_id)
                     #saving message
                     self.ids.error_message.text = '[color=00ff33]Save successully![/color]'
                     customer = self.database.get_customer_by_number(number)
@@ -291,7 +301,7 @@ class Register:
 
 
 class OpenDBoxApp(App):
-    """application principal class """
+    """app principal class """
     #set of the theme manager and a set of principal theme
 
     theme_cls = ThemeManager()
